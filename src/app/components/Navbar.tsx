@@ -3,9 +3,11 @@
 import { useState } from 'react';
 import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
+
 const Navbar: React.FC = () => {
     const [isOpen, setIsOpen] = useState(false);
     const { data: session } = useSession();
+    const [dropdownOpen, setDropdownOpen] = useState(false);
 
     return (
         <nav
@@ -18,7 +20,7 @@ const Navbar: React.FC = () => {
                 </Link>
 
                 <div className="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
-                  {session ? (
+                    {session ? (
                         <>
                             <button onClick={() => setIsOpen(!isOpen)} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                                 {session.user?.name || session.user?.email}
@@ -36,7 +38,6 @@ const Navbar: React.FC = () => {
                         <Link href="/login"  className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                         Login
                         </Link>
-
                     )}
 
                     <button data-collapse-toggle="navbar-sticky" type="button"
@@ -58,13 +59,29 @@ const Navbar: React.FC = () => {
                                   className="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-blue-500">
                                 Home
                             </Link>
-
                         </li>
-                        <li>
-                            <Link href="/knowledge-base"
-                                  className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
+                        <li 
+                            className="relative" 
+                            onMouseEnter={() => setDropdownOpen(true)} 
+                            onMouseLeave={() => setDropdownOpen(false)}
+                        >
+                            <span className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
                                 Knowledge Base
-                            </Link>
+                            </span>
+                            {dropdownOpen && (
+                                <ul className="absolute top-full left-0 bg-white border border-gray-200 rounded shadow py-1 z-10">
+                                    <li>
+                                        <Link href="/knowledge-base/assertions" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                            Assertions
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link href="/knowledge-base/evidence" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                            Evidence
+                                        </Link>
+                                    </li>
+                                </ul>
+                            )}
                         </li>
                         <li>
                             <Link href="/about"
@@ -86,4 +103,3 @@ const Navbar: React.FC = () => {
 };
 
 export default Navbar;
-

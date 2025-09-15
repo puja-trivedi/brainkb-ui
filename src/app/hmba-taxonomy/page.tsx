@@ -16,10 +16,30 @@ export default function TreeDemo() {
   useEffect(() => setTranslate({ x: 300, y: 100 }), []);
 
   useEffect(() => {
-    fetch('/treeData.json')
-      .then(response => response.json())
-      .then(setData)
-      .catch(error => console.error('Error loading tree data:', error));
+    const controller = new AbortController();
+    
+    const fetchTreeData = async () => {
+      try {
+        const res = await fetch('/api/hmba-taxonomy-data', {
+          method: "GET",
+          signal: controller.signal,
+        });
+
+        if (!res.ok) {
+          console.error("Failed to fetch tree data:", await res.text());
+          return;
+        }
+
+        const data = await res.json();
+        setData(data);
+      } catch (err: any) {
+        if (err?.name === "AbortError") return;
+        console.error("Error loading tree data:", err);
+      }
+    };
+
+    fetchTreeData();
+    return () => controller.abort();
   }, []);
 
   if (!data) return <div>Loading...</div>;
